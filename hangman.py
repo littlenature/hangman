@@ -1,3 +1,5 @@
+__author__ = 'user'
+
 #!/usr/bin/env python3.4
 # -*- coding: utf-8 -*-
 import random
@@ -59,7 +61,18 @@ HANGMANPICS = ['''
  / \  |
       |
 =========''']
-words = 'ant baboon badger bat bear beaver camel cat clam cobra cougar coyote crow deer dog donkey duck eagle ferret fox frog goat goose hawk lion lizard llama mole monkey moose mouse mule newt otter owl panda parrot pigeon python rabbit ram rat raven rhino salmon seal shark sheep skunk sloth snake spider stork swan tiger toad trout turkey turtle weasel whale wolf wombat zebra'.split()
+
+
+def readData(fileName):
+    file = open(fileName, 'r')
+    str = file.read()
+    file.close()
+    return str
+
+def writeScore(score):
+    file = open("score.txt", 'w')
+    file.write(str(score))
+    file.close()
 
 def getRandomWord(wordList):
     # This function returns a random string from the passed list of strings.
@@ -120,7 +133,7 @@ def checkWrongAnswer(missedLetters, secretWord):
     if len(missedLetters) == len(HANGMANPICS) - 1:
         return True
     return False
-            
+
 def main():
     """Main application entry point."""
     print('H A N G M A N - by Renesys')
@@ -128,6 +141,9 @@ def main():
     correctLetters = ''
     gameSucceeded = False
     gameFailed = False
+    words = readData("test.txt").split()
+    record = int(readData("score.txt"))
+    score = 0
     secretWord = getRandomWord(words)
 
     while True:
@@ -136,6 +152,7 @@ def main():
         if gameSucceeded or gameFailed:
             if gameSucceeded:
                 print('Yes! The secret word is "' + secretWord + '"! You have won!')
+                score += 10
             else:
                 print('You have run out of guesses!\nAfter ' + str(len(missedLetters)) + ' missed guesses and ' + str(len(correctLetters)) + ' correct guesses, the word was "' + secretWord + '"')
 
@@ -146,8 +163,8 @@ def main():
                 gameSucceeded = False
                 gameFailed = False
                 secretWord = getRandomWord(words)
-                continue 
-            else: 
+                continue
+            else:
                 break
 
         # Let the player type in a letter.
@@ -158,6 +175,9 @@ def main():
         else:
             missedLetters = missedLetters + guess
             gameFailed = checkWrongAnswer(missedLetters, secretWord)
+
+    if(record < score):
+        writeScore(score)
 
 
 if __name__ == "__main__":
